@@ -1,6 +1,7 @@
 
 package com.dev.utils;
 
+import com.dev.controllers.TestController;
 import com.dev.objects.NoteObject;
 import com.dev.objects.User;
 import com.dev.objects.UserObject;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.Query;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +27,24 @@ public class Persist {
     public Persist (SessionFactory sf) {
         this.sessionFactory = sf;
     }
+    @Autowired
+    private TestController testController;
 
     @PostConstruct
-    public void createConnectionToDatabase () {
+    public  void creatFirstUser(){
+
+        UserObject userObject = new UserObject();
+        String username="manager";
+        String password="12345678";
+        userObject.setUsername(username);
+        String token = testController.createHash(username, password);
+        userObject.setToken(token);
+        if(!usernameExist(username)) {
+            saveUser(userObject);
+        }
+
+    }
+/*    public void createConnectionToDatabase () {
         try {
             this.connection = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/football_project", "root", "1234");
@@ -40,46 +57,25 @@ public class Persist {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
-    public List<UserObject> getAllUsersHibernate () {
+  /*  public List<UserObject> getAllUsersHibernate () {
         Session session = sessionFactory.openSession();
         UserObject userObject = new UserObject();
         session.save(userObject);
         List<UserObject> userObjects = session.createQuery("FROM UserObject ").list();
         session.close();
         return userObjects;
-    }
+    }*/
 
-    public List<NoteObject> getNotesByUser(String token){
-        return sessionFactory.openSession()
-                .createQuery("FROM NoteObject WHERE userObject.token = " + token).list();
-    }
     public void saveUser(UserObject userObject){
         sessionFactory.openSession().save(userObject);
     }
 
-    public List<User> getAllUsers() {
-        List<User> allUsers = new ArrayList<>();
-        try {
-            ResultSet resultSet =
-                    this.connection
-                            .createStatement()
-                            .executeQuery("SELECT username, token FROM users");
-            while (resultSet.next()) {
-                String token = resultSet.getString("token");
-                String username = resultSet.getString("username");
-                User user = new User(username, token);
-                allUsers.add(user);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return allUsers;
-    }
 
 
-    public void addUser (String username, String token) {
+
+/*    public void addUser (String username, String token) {
         try {
             PreparedStatement preparedStatement =
                     this.connection
@@ -90,11 +86,18 @@ public class Persist {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
+    }*/
 
-    public boolean usernameAvailable (String username) {
-        boolean available = false;
-        try {
+    public boolean usernameExist (String username) {
+        boolean exist = false;
+        String response = null;
+        Session session = sessionFactory.openSession();
+        List<UserObject> users =session.createQuery("select token FROM UserObject where username= :username").setParameter("username",username).list();
+        session.close();
+        if(users.size()==1){
+            exist=true;
+        }
+     /*   try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(
                     "SELECT id " +
                     "FROM users " +
@@ -108,11 +111,11 @@ public class Persist {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        return available;
+        }*/
+        return exist;
     }
 
-    public User getUserByToken (String token) {
+/*    public User getUserByToken (String token) {
         User user = null;
         try {
             PreparedStatement preparedStatement = this.connection
@@ -130,39 +133,23 @@ public class Persist {
             throw new RuntimeException(e);
         }
         return user;
-    }
+    }*/
 
-    public void addNote (int userId, String content) {
-        try {
-            PreparedStatement preparedStatement = this.connection.prepareStatement("INSERT INTO notes (content, user_id) VALUE (?, ?)");
-            preparedStatement.setString(1, content);
-            preparedStatement.setInt(2, userId);
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-        }
-    }
 
-    public List<String> getNotesByUserId (int userId) {
-        List<String> notes = new ArrayList<>();
-        try {
-            PreparedStatement preparedStatement = this.connection.prepareStatement("SELECT content FROM notes WHERE user_id = ?");
-            preparedStatement.setInt(1, userId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                String content = resultSet.getString("content");
-                notes.add(content);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return notes;
-    }
 
     public String getUserByCreds (String username, String token) {
         String response = null;
-        try {
+        Session session = sessionFactory.openSession();
+        Query query=session.createQuery(" FROM UserObject where username= :username AND token= :token");
+        query.setParameter("username",username);
+        query.setParameter("token",token);
+        List<UserObject> users=query.getResultList();
+        if(users.size()==1) {
+            response = users.get(0).getToken();
+        }
+        System.out.println(response);
+        session.close();
+       /* try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(
                     "SELECT * FROM users WHERE username = ? AND token = ?");
             preparedStatement.setString(1, username);
@@ -172,8 +159,9 @@ public class Persist {
                 response = token;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+
+            System.out.println(e.getMessage());
+        }*/
         return response;
     }
 
