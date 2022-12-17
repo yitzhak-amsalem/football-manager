@@ -1,8 +1,10 @@
 package com.dev.controllers;
 
+import com.dev.objects.GroupObject;
+import com.dev.objects.TeamRank;
 import com.dev.objects.User;
 import com.dev.responses.BasicResponse;
-import com.dev.responses.SignInReponse;
+import com.dev.responses.SignInResponse;
 import com.dev.utils.Persist;
 import com.dev.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +13,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.Table;
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -31,34 +34,42 @@ public class TestController {
     @Autowired
     private Persist persist;
 
+
+    List<GroupObject> allGroups = new ArrayList<>();
+
     @PostConstruct
     public void init () {
+
     }
 
-
-    @RequestMapping(value = "/check", method = RequestMethod.GET)
-    public String getCheck () {
-        return "Success from get request";
+    @RequestMapping(value = "/get-league-table", method = {RequestMethod.GET, RequestMethod.POST})
+    public List<TeamRank> getTable () {
+        List<TeamRank> teams = new ArrayList<>();
+        persist.setGame();
+        allGroups = persist.getAllGroups();
+        for (GroupObject group: allGroups){
+            TeamRank teamRank = new TeamRank(group.getGroupName(), 0,0,0,0,0);
+            teams.add(teamRank);
+        }
+        for (TeamRank team: teams){
+            persist.getGroupDetails(team);
+        }
+        Collections.sort(teams);
+        return teams;
     }
-
-    @RequestMapping(value = "/check", method = RequestMethod.POST)
-    public String postCheck () {
-        return "Success from post request";
+    @RequestMapping(value = "/set-group-in-live", method = {RequestMethod.GET, RequestMethod.POST})
+    public void setGroupInLive (String groupName) {
+        persist.setGroupInLive(groupName);
     }
-
-
-    @RequestMapping(value = "/get-all-users", method = {RequestMethod.GET, RequestMethod.POST})
-    public List<User> getAllUsers () {
-        List<User> allUsers = persist.getAllUsers();
-        return allUsers;
+    @RequestMapping(value = "/get-available-groups", method = {RequestMethod.GET, RequestMethod.POST})
+    public List<String> getAvailableGroups () {
+        List<String> availableGroupsNames = new ArrayList<>();
+        List<GroupObject> groups = persist.getAvailableGroups();
+        for (GroupObject group: groups){
+            availableGroupsNames.add(group.getGroupName());
+        }
+        return availableGroupsNames; // todo all group details or group name only
     }
-
-
-    @RequestMapping(value = "/test", method = {RequestMethod.GET, RequestMethod.POST})
-    public Object test () {
-        return new Date().toString();
-    }
-
 
 
     @RequestMapping(value = "/sign-in", method = RequestMethod.POST)
@@ -74,7 +85,7 @@ public class TestController {
             }
         } else {
             User user = persist.getUserByToken(token);
-            basicResponse = new SignInReponse(true, null, user);
+            basicResponse = new SignInResponse(true, null, user);
         }
         return basicResponse;
     }
