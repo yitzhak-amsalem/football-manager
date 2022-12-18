@@ -3,9 +3,6 @@ package com.dev.utils;
 
 import com.dev.objects.*;
 
-import com.dev.controllers.TestController;
-import com.dev.objects.NoteObject;
-import com.dev.objects.User;
 import com.dev.objects.UserObject;
 
 import org.hibernate.Session;
@@ -15,14 +12,10 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.Query;
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class Persist {
-
-    private Connection connection;
 
     private final SessionFactory sessionFactory;
 
@@ -31,33 +24,23 @@ public class Persist {
         this.sessionFactory = sf;
     }
     @Autowired
-    private TestController testController;
+    private Utils utils;
 
     @PostConstruct
-    public  void creatFirstUser(){
-
+    public void initBasicDetails(){
+        setGroups();
+        setFirstUser();
+    }
+    public void setFirstUser(){
         UserObject userObject = new UserObject();
         String username="manager";
         String password="12345678";
         userObject.setUsername(username);
-        String token = testController.createHash(username, password);
+        String token = utils.createHash(username, password);
         userObject.setToken(token);
-        if(!usernameExist(username)) {
+        if(!userNameExist(username)) {
             saveUser(userObject);
         }
-
-    }
-/*    public void createConnectionToDatabase () {
-        try {
-            this.connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/football_project?allowPublicKeyRetrieval=true&useSSL=false", "root", "1234");
-            System.out.println("Successfully connected to DB");
-            setGroups();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
     }
     public void setGroups(){
         Session session = sessionFactory.openSession();
@@ -74,7 +57,6 @@ public class Persist {
                 session.save(group);
             }
         }
-
     }
     public void setGame(){
         Session session = sessionFactory.openSession();
@@ -116,6 +98,7 @@ public class Persist {
         session.close();
 
     }
+
     public GroupObject getGroupByGroupName(String groupName){
         Session session = sessionFactory.openSession();
         List<GroupObject> availableGroups = session.createQuery("FROM GroupObject WHERE groupName = :groupName")
@@ -129,7 +112,7 @@ public class Persist {
 
     public List<GroupObject> getAvailableGroups () {
         Session session = sessionFactory.openSession();
-        List<GroupObject> availableGroups = session.createQuery("FROM GroupObject WHERE inLive = " + false).list();
+        List<GroupObject> availableGroups = session.createQuery("FROM GroupObject WHERE inLive = " + false).list(); // todo
         session.close();
         return availableGroups;
     }
@@ -151,7 +134,7 @@ public class Persist {
 
     public void getGroupDetails (TeamRank teamRank) {
         Session session = sessionFactory.openSession(); //
-        List<Game> games = session.createQuery("FROM Game WHERE groupA.groupName = :groupNameA or groupB.groupName = :groupNameB" )
+        List<Game> games = session.createQuery("FROM Game WHERE groupA.groupName = :groupNameA or groupB.groupName = :groupNameB and isLive = false ")
                 .setParameter("groupNameA", teamRank.getGroupName())
                 .setParameter("groupNameB", teamRank.getGroupName())
                 .list();
@@ -168,34 +151,31 @@ public class Persist {
         }
         System.out.println("update: " + group);
         session.close();
-    }
+    }*/
 
     public void saveUser(UserObject userObject){
         sessionFactory.openSession().save(userObject);
     }
 
-    public boolean usernameExist (String username) {
+    public boolean userNameExist(String username) {
         boolean exist = false;
-        String response = null;
         Session session = sessionFactory.openSession();
-        List<UserObject> users =session.createQuery("select token FROM UserObject where username= :username").setParameter("username",username).list();
+        List<UserObject> users =session.createQuery("FROM UserObject where username= :username")
+                .setParameter("username",username).list();
         session.close();
-        if(users.size()==1){
-            exist=true;
+        if(users.size() == 1){
+            exist = true;
         }
         return exist;
     }
 
-
-
-
     public String getUserByCreds (String username, String token) {
         String response = null;
         Session session = sessionFactory.openSession();
-        Query query=session.createQuery(" FROM UserObject where username= :username AND token= :token");
+        Query query = session.createQuery(" FROM UserObject where username= :username AND token= :token");
         query.setParameter("username",username);
         query.setParameter("token",token);
-        List<UserObject> users=query.getResultList();
+        List<UserObject> users = query.getResultList();
         if(users.size()==1) {
             response = users.get(0).getToken();
         }

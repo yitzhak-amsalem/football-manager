@@ -12,7 +12,7 @@ public class GroupObject {
     @Column
     public String groupName;
     @Column
-    private boolean inLive;
+    private Boolean inLive;
 
 
     public String getGroupName() {
@@ -23,7 +23,7 @@ public class GroupObject {
         this.groupName = groupName;
     }
 
-    public boolean isInLive() {
+    public Boolean isInLive() {
         return inLive;
     }
 

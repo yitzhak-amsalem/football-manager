@@ -49,7 +49,6 @@ public class TestConfig {
         configuration.addAnnotatedClass(Game.class);
         configuration.addAnnotatedClass(GroupObject.class);
         configuration.addAnnotatedClass(UserObject.class);
-        configuration.addAnnotatedClass(NoteObject.class);
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties()).build();
         return configuration.buildSessionFactory(serviceRegistry);
