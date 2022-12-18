@@ -24,12 +24,4 @@ public class Utils {
         }
         return valid;
     }
-
-    public boolean validateNote (String note) {
-        boolean valid = false;
-        if (note != null && note.length() > 0) {
-            valid = true;
-        }
-        return valid;
-    }
 }
