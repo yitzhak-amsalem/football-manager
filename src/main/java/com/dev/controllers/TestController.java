@@ -57,6 +57,7 @@ public class TestController {
         Collections.sort(teams);
         return teams;
     }
+
     @RequestMapping(value = "/set-group-in-live", method = {RequestMethod.GET, RequestMethod.POST})
     public void setGroupInLive (String groupName) {
         persist.setGroupInLive(groupName);
@@ -72,25 +73,28 @@ public class TestController {
     }
 
 
-    @RequestMapping(value = "/sign-in", method = RequestMethod.POST)
-    public BasicResponse signIn (String username, String password) {
+    @RequestMapping(value = "/log-in", method = RequestMethod.POST)
+    public BasicResponse logIn (String username, String password) {
+        System.out.println("username:"+username );
+
         BasicResponse basicResponse = null;
         String token = createHash(username, password);
+        System.out.println("token:"+token );
         token = persist.getUserByCreds(username, token);
         if (token == null) {
-            if (persist.usernameAvailable(username)) {
+            System.out.println("token:"+token );
+            if (persist.usernameExist(username)) {
                 basicResponse = new BasicResponse(false, 1);
             } else {
                 basicResponse = new BasicResponse(false, 2);
             }
         } else {
-            User user = persist.getUserByToken(token);
-            basicResponse = new SignInResponse(true, null, user);
+            basicResponse = new BasicResponse(true, null);
         }
         return basicResponse;
     }
 
-    @RequestMapping(value = "/create-account", method = {RequestMethod.GET, RequestMethod.POST})
+/*    @RequestMapping(value = "/create-account", method = {RequestMethod.GET, RequestMethod.POST})
     public User createAccount (String username, String password) {
         User newAccount = null;
         if (utils.validateUsername(username)) {
@@ -109,7 +113,7 @@ public class TestController {
             System.out.println("username is invalid");
         }
         return newAccount;
-    }
+    }*/
 
 
     public String createHash (String username, String password) {
@@ -141,48 +145,7 @@ public class TestController {
     }
 
 
-    @RequestMapping(value = "/save-note", method = {RequestMethod.GET, RequestMethod.POST})
-    public boolean saveNote (String note, String token) {
-        boolean success = false;
-        if (utils.validateNote(note)) {
-            User user = persist.getUserByToken(token);
-            if (user != null) {
-                persist.addNote(user.getId(), note);
-                success = true;
-            } else {
-                System.out.println("cannot find match for token " + token);
-            }
-        } else {
-            System.out.println("note text was not validated");
-        }
-        return success;
-    }
 
-    @RequestMapping(value = "/get-all-notes", method = {RequestMethod.GET, RequestMethod.POST})
-    public List<String> getAllNotes (String token) {
-        List<String> notes = null;
-        User user = persist.getUserByToken(token);
-        if (user != null) {
-            notes = persist.getNotesByUserId(user.getId());
-        } else {
-            System.out.println("cannot find match for token " + token);
-        }
-
-        return notes;
-    }
-
-    private User getUserByToken (String token) {
-        User matchedUser = null;
-        if (token != null) {
-            for (User user : this.myUsers) {
-                if (user.getToken().equals(token)) {
-                    matchedUser = user;
-                    break;
-                }
-            }
-        }
-        return matchedUser;
-    }
 
 
 
