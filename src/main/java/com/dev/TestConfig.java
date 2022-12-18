@@ -1,7 +1,6 @@
 package com.dev;
 
-import com.dev.objects.NoteObject;
-import com.dev.objects.UserObject;
+import com.dev.objects.*;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
@@ -47,6 +46,8 @@ public class TestConfig {
         for (Class<? extends Object> clazz : entities) {
             configuration.addAnnotatedClass(clazz);
         }
+        configuration.addAnnotatedClass(Game.class);
+        configuration.addAnnotatedClass(GroupObject.class);
         configuration.addAnnotatedClass(UserObject.class);
         configuration.addAnnotatedClass(NoteObject.class);
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
