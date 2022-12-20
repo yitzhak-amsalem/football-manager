@@ -2,34 +2,25 @@ package com.dev.utils;
 
 import org.springframework.stereotype.Component;
 
+import javax.xml.bind.DatatypeConverter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 @Component
 public class Utils {
-
-    public boolean validateUsername (String username) {
-        boolean valid = false;
-        if (username != null) {
-            if (username.contains("@")) {
-                valid = true;
-            }
+    public String createHash (String username, String password) {
+        String raw = String.format("%s_%s", username, password);
+        String myHash = null;
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(raw.getBytes());
+            byte[] digest = md.digest();
+            myHash = DatatypeConverter
+                    .printHexBinary(digest).toUpperCase();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
-        return valid;
-    }
 
-    public boolean validatePassword (String password) {
-        boolean valid = false;
-        if (password != null) {
-            if (password.length() >= 8) {
-                valid = true;
-            }
-        }
-        return valid;
-    }
-
-    public boolean validateNote (String note) {
-        boolean valid = false;
-        if (note != null && note.length() > 0) {
-            valid = true;
-        }
-        return valid;
+        return myHash;
     }
 }
