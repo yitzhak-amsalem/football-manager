@@ -112,9 +112,9 @@ public class Persist {
 
     public List<GroupObject> getAvailableGroups () {
         Session session = sessionFactory.openSession();
-        List<GroupObject> groups = session.createQuery("FROM GroupObject WHERE inLive= :inLive").setParameter("inLive",false).list();
+        List<GroupObject> availableGroups = session.createQuery("FROM GroupObject WHERE inLive = " + false).list(); // todo
         session.close();
-        return groups;
+        return availableGroups;
     }
     public List<GroupObject> getAllGroups () {
         Session session = sessionFactory.openSession();
@@ -132,7 +132,7 @@ public class Persist {
         session.close();
     }
 
-    public void getGroupDetails (TeamRank teamRank) {
+    public void getGroupDetails (TeamRankLive teamRank) {
         Session session = sessionFactory.openSession(); //
         List<Game> games = session.createQuery("FROM Game WHERE groupA.groupName = :groupNameA or groupB.groupName = :groupNameB and isLive = false ")
                 .setParameter("groupNameA", teamRank.getGroupName())

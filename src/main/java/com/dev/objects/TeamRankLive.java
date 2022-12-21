@@ -1,7 +1,7 @@
 package com.dev.objects;
 
 
-public class TeamRank implements Comparable<TeamRank>{
+public class TeamRankLive implements Comparable<TeamRankLive>{
     public String groupName;
     private int losses;
     private int wins;
@@ -9,7 +9,7 @@ public class TeamRank implements Comparable<TeamRank>{
     private int goalsForward;
     private int goalsAgainst;
 
-    public TeamRank(String groupName, int losses, int wins, int draws, int goalsForward, int goalsAgainst) {
+    public TeamRankLive(String groupName, int losses, int wins, int draws, int goalsForward, int goalsAgainst) {
         this.groupName = groupName;
         this.losses = losses;
         this.wins = wins;
@@ -39,7 +39,7 @@ public class TeamRank implements Comparable<TeamRank>{
     }
 
     @Override
-    public int compareTo(TeamRank otherTeam) {
+    public int compareTo(TeamRankLive otherTeam) {
         return ((otherTeam.wins * 3 + otherTeam.draws) - (this.wins * 3 + this.draws) != 0) ?
                     ((otherTeam.wins * 3 + otherTeam.draws) - (this.wins * 3 + this.draws))
                     :
