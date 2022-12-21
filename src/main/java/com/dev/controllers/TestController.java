@@ -1,5 +1,6 @@
 package com.dev.controllers;
 
+import com.dev.objects.Game;
 import com.dev.objects.GroupObject;
 import com.dev.objects.TeamRankLive;
 import com.dev.responses.BasicResponse;
@@ -18,32 +19,34 @@ import java.util.List;
 
 @RestController
 public class TestController {
-
     @Autowired
     public Utils utils;
 
-
     @Autowired
     private Persist persist;
-
-
+    List<TeamRankLive> teams;
     List<GroupObject> allGroups = new ArrayList<>();
 
     @PostConstruct
     public void init () {
 
     }
-
     @RequestMapping(value = "/get-league-table", method = {RequestMethod.GET, RequestMethod.POST})
-    public List<TeamRankLive> getTable () {
-        List<TeamRankLive> teams = new ArrayList<>();
+    public List<TeamRankLive> getTable (boolean withLive) {
+        System.out.println(withLive);
+        teams = new ArrayList<>();
         allGroups = persist.getAllGroups();
         for (GroupObject group: allGroups){
             TeamRankLive teamRank = new TeamRankLive(group.getGroupName(), 0,0,0,0,0);
             teams.add(teamRank);
         }
         for (TeamRankLive team: teams){
-            persist.getGroupDetails(team);
+            System.out.println("--------");
+            System.out.println(team);
+            System.out.println("========");
+            persist.getGroupDetails(team, withLive);
+            System.out.println(team);
+            System.out.println("--------");
         }
         Collections.sort(teams);
         return teams;
@@ -54,20 +57,19 @@ public class TestController {
         persist.setGroupInLive(groupName);
     }
     @RequestMapping(value = "/get-available-groups", method = {RequestMethod.GET, RequestMethod.POST})
-    public List<TeamRankLive> getLiveTable () {
-        List<TeamRankLive> teamsLive = new ArrayList<>();
-        allGroups = persist.getAllGroups();
-        for (GroupObject group: allGroups){
-            TeamRankLive teamRank = new TeamRankLive(group.getGroupName(), 0,0,0,0,0);
-            teamsLive.add(teamRank);
+    public List<String> getAvailableGroups () {
+        List<String> availableGroupsNames = new ArrayList<>();
+        List<GroupObject> groups = persist.getAvailableGroups();
+        for (GroupObject group: groups){
+            availableGroupsNames.add(group.getGroupName());
         }
-        for (TeamRankLive team: teamsLive){
-            persist.getGroupDetails(team);
-        }
-        Collections.sort(teamsLive);
-        return teamsLive;
+        return availableGroupsNames; // todo all group details or group name only
     }
 
+    @RequestMapping(value = "/get-live-games", method = {RequestMethod.GET, RequestMethod.POST})
+    public List<Game> getLiveGames () {
+        return persist.getLiveGames();
+    }
 
     @RequestMapping(value = "/log-in", method = {RequestMethod.GET, RequestMethod.POST})
     public BasicResponse logIn (String username, String password) {
