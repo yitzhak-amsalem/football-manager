@@ -41,12 +41,7 @@ public class TestController {
             teams.add(teamRank);
         }
         for (TeamRankLive team: teams){
-            System.out.println("--------");
-            System.out.println(team);
-            System.out.println("========");
             persist.getGroupDetails(team, withLive);
-            System.out.println(team);
-            System.out.println("--------");
         }
         Collections.sort(teams);
         return teams;

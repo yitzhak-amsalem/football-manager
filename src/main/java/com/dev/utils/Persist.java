@@ -142,13 +142,11 @@ public class Persist {
         Session session = sessionFactory.openSession();
         List<Game> games = new ArrayList<>();
         if (withLive){
-            System.out.println("in true");
             games = session.createQuery("FROM Game WHERE groupA.groupName = :groupNameA or groupB.groupName = :groupNameB")
                     .setParameter("groupNameA", teamRank.getGroupName())
                     .setParameter("groupNameB", teamRank.getGroupName())
                     .list();
         } else {
-            System.out.println("in false");
             games = session.createQuery("FROM Game WHERE (groupA.groupName = :groupNameA or groupB.groupName = :groupNameB) and isLive = false")
                     .setParameter("groupNameA", teamRank.getGroupName())
                     .setParameter("groupNameB", teamRank.getGroupName())
