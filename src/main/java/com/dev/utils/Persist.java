@@ -112,7 +112,8 @@ public class Persist {
 
     public List<GroupObject> getAvailableGroups () {
         Session session = sessionFactory.openSession();
-        List<GroupObject> availableGroups = session.createQuery("FROM GroupObject WHERE inLive = " + false).list(); // todo
+        List<GroupObject> availableGroups = session.createQuery("FROM GroupObject WHERE inLive = :inLive ")
+                .setParameter("inLive", false).list(); // todo
         session.close();
         return availableGroups;
     }
@@ -122,19 +123,40 @@ public class Persist {
         session.close();
         return groups;
     }
-    public void setGroupInLive(String groupName){
+    public List<Game> getLiveGames () {
         Session session = sessionFactory.openSession();
-        GroupObject groupToUpdate = session.get(GroupObject.class, groupName);
-        System.out.println("before update" + groupToUpdate);
+        List<Game> liveGames = session.createQuery("FROM Game WHERE isLive = true ")
+                .list();
+        session.close();
+        System.out.println(liveGames.toString());
+        return liveGames;
+    }
+    public void setGroupInLive(String groupName){ // todo not check if is work
+        Session session = sessionFactory.openSession();
+        GroupObject groupToUpdate = session.get(GroupObject.class, getGroupByGroupName(groupName).id);
+        System.out.println(groupToUpdate.groupName);
         groupToUpdate.setInLive(true);
-        GroupObject groupToUpdate1 = session.get(GroupObject.class, groupName);
-        System.out.println("after update" + groupToUpdate1);
+        session.update(groupToUpdate);
         session.close();
     }
 
+
+
     public void getGroupDetails (TeamRank teamRank) {
-        Session session = sessionFactory.openSession(); //
-        List<Game> games = session.createQuery("FROM Game WHERE groupA.groupName = :groupNameA or groupB.groupName = :groupNameB and isLive = false ")
+        Session session = sessionFactory.openSession();
+        List<Game> games = session.createQuery("FROM Game WHERE groupA.groupName = :groupNameA or groupB.groupName = :groupNameB and isLive = :isLive ")
+                .setParameter("groupNameA", teamRank.getGroupName())
+                .setParameter("groupNameB", teamRank.getGroupName())
+                .setParameter("isLive", false)
+                .list();
+        for (Game game: games){
+            teamRank.updateGroupDetails(game);
+        }
+        session.close();
+    }
+    public void getGroupLiveDetails (TeamRank teamRank) {
+        Session session = sessionFactory.openSession();
+        List<Game> games = session.createQuery("FROM Game WHERE groupA.groupName = :groupNameA or groupB.groupName = :groupNameB")
                 .setParameter("groupNameA", teamRank.getGroupName())
                 .setParameter("groupNameB", teamRank.getGroupName())
                 .list();
@@ -143,15 +165,6 @@ public class Persist {
         }
         session.close();
     }
-/*    public void getGroupLiveDetails (GroupObject group) {
-        Session session = sessionFactory.openSession();
-        List<Game> games = session.createQuery("FROM Game WHERE groupA = " + group.getGroupName() + " OR groupB = " + group.getGroupName()).list(); //TODO update group details from results
-        for (Game game: games){
-            group.updateGroupDetails(game);
-        }
-        System.out.println("update: " + group);
-        session.close();
-    }*/
 
     public void saveUser(UserObject userObject){
         sessionFactory.openSession().save(userObject);

@@ -1,5 +1,6 @@
 package com.dev.controllers;
 
+import com.dev.objects.Game;
 import com.dev.objects.GroupObject;
 import com.dev.objects.TeamRank;
 import com.dev.responses.BasicResponse;
@@ -26,24 +27,36 @@ public class TestController {
     @Autowired
     private Persist persist;
 
-
+    List<TeamRank> teams;
     List<GroupObject> allGroups = new ArrayList<>();
 
     @PostConstruct
     public void init () {
-
+        allGroups = persist.getAllGroups();
     }
 
     @RequestMapping(value = "/get-league-table", method = {RequestMethod.GET, RequestMethod.POST})
     public List<TeamRank> getTable () {
-        List<TeamRank> teams = new ArrayList<>();
-        allGroups = persist.getAllGroups();
+        teams = new ArrayList<>();
         for (GroupObject group: allGroups){
             TeamRank teamRank = new TeamRank(group.getGroupName(), 0,0,0,0,0);
             teams.add(teamRank);
         }
         for (TeamRank team: teams){
             persist.getGroupDetails(team);
+        }
+        Collections.sort(teams);
+        return teams;
+    }
+    @RequestMapping(value = "/get-league-table-live", method = {RequestMethod.GET, RequestMethod.POST})
+    public List<TeamRank> getTableLive () {
+        teams = new ArrayList<>();
+        for (GroupObject group: allGroups){
+            TeamRank teamRank = new TeamRank(group.getGroupName(), 0,0,0,0,0);
+            teams.add(teamRank);
+        }
+        for (TeamRank team: teams){
+            persist.getGroupLiveDetails(team);
         }
         Collections.sort(teams);
         return teams;
@@ -61,6 +74,11 @@ public class TestController {
             availableGroupsNames.add(group.getGroupName());
         }
         return availableGroupsNames; // todo all group details or group name only
+    }
+    @RequestMapping(value = "/get-live-games", method = {RequestMethod.GET, RequestMethod.POST})
+    public List<Game> getLiveGames () {
+
+        return persist.getLiveGames();
     }
 
 

@@ -1,5 +1,6 @@
 package com.dev.responses;
 
+/*
 public class SignInResponse extends BasicResponse{
     private User user;
 
@@ -16,3 +17,4 @@ public class SignInResponse extends BasicResponse{
         this.user = user;
     }
 }
+*/

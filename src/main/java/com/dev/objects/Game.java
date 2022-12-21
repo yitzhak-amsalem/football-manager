@@ -24,8 +24,18 @@ public class Game {
     private int goalsGroupB;
 
     @Column
-    private boolean isLive;
+    private Boolean isLive;
 
+    @Override
+    public String toString() {
+        return "Game{" +
+                "groupA=" + groupA +
+                ", groupB=" + groupB +
+                ", goalsGroupA=" + goalsGroupA +
+                ", goalsGroupB=" + goalsGroupB +
+                ", isLive=" + isLive +
+                '}';
+    }
 
     public GroupObject getGroupA() {
         return groupA;
@@ -59,7 +69,7 @@ public class Game {
         this.goalsGroupB = goalsGroupB;
     }
 
-    public boolean isLive() {
+    public Boolean isLive() {
         return isLive;
     }
 
