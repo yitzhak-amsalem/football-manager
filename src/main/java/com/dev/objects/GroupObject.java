@@ -23,7 +23,7 @@ public class GroupObject {
         this.groupName = groupName;
     }
 
-    public Boolean isInLive() {
+    public Boolean getInLive() {
         return inLive;
     }
 

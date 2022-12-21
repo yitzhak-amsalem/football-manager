@@ -132,7 +132,7 @@ public class Persist {
         session.close();
     }
 
-    public void getGroupDetails (TeamRank teamRank) {
+    public void getGroupDetails (TeamRankLive teamRank) {
         Session session = sessionFactory.openSession(); //
         List<Game> games = session.createQuery("FROM Game WHERE groupA.groupName = :groupNameA or groupB.groupName = :groupNameB and isLive = false ")
                 .setParameter("groupNameA", teamRank.getGroupName())

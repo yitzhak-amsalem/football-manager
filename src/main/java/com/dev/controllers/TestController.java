@@ -1,7 +1,7 @@
 package com.dev.controllers;
 
 import com.dev.objects.GroupObject;
-import com.dev.objects.TeamRank;
+import com.dev.objects.TeamRankLive;
 import com.dev.responses.BasicResponse;
 import com.dev.utils.Persist;
 import com.dev.utils.Utils;
@@ -35,14 +35,14 @@ public class TestController {
     }
 
     @RequestMapping(value = "/get-league-table", method = {RequestMethod.GET, RequestMethod.POST})
-    public List<TeamRank> getTable () {
-        List<TeamRank> teams = new ArrayList<>();
+    public List<TeamRankLive> getTable () {
+        List<TeamRankLive> teams = new ArrayList<>();
         allGroups = persist.getAllGroups();
         for (GroupObject group: allGroups){
-            TeamRank teamRank = new TeamRank(group.getGroupName(), 0,0,0,0,0);
+            TeamRankLive teamRank = new TeamRankLive(group.getGroupName(), 0,0,0,0,0);
             teams.add(teamRank);
         }
-        for (TeamRank team: teams){
+        for (TeamRankLive team: teams){
             persist.getGroupDetails(team);
         }
         Collections.sort(teams);
@@ -54,13 +54,18 @@ public class TestController {
         persist.setGroupInLive(groupName);
     }
     @RequestMapping(value = "/get-available-groups", method = {RequestMethod.GET, RequestMethod.POST})
-    public List<String> getAvailableGroups () {
-        List<String> availableGroupsNames = new ArrayList<>();
-        List<GroupObject> groups = persist.getAvailableGroups();
-        for (GroupObject group: groups){
-            availableGroupsNames.add(group.getGroupName());
+    public List<TeamRankLive> getLiveTable () {
+        List<TeamRankLive> teamsLive = new ArrayList<>();
+        allGroups = persist.getAllGroups();
+        for (GroupObject group: allGroups){
+            TeamRankLive teamRank = new TeamRankLive(group.getGroupName(), 0,0,0,0,0);
+            teamsLive.add(teamRank);
         }
-        return availableGroupsNames; // todo all group details or group name only
+        for (TeamRankLive team: teamsLive){
+            persist.getGroupDetails(team);
+        }
+        Collections.sort(teamsLive);
+        return teamsLive;
     }
 
 
@@ -83,6 +88,7 @@ public class TestController {
         }
         return basicResponse;
     }
+
 
 
 }
