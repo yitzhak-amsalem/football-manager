@@ -112,9 +112,9 @@ public class Persist {
 
     public List<GroupObject> getAvailableGroups () {
         Session session = sessionFactory.openSession();
-        List<GroupObject> availableGroups = session.createQuery("FROM GroupObject WHERE inLive = " + false).list(); // todo
+        List<GroupObject> groups = session.createQuery("FROM GroupObject WHERE inLive= :inLive").setParameter("inLive",false).list();
         session.close();
-        return availableGroups;
+        return groups;
     }
     public List<GroupObject> getAllGroups () {
         Session session = sessionFactory.openSession();
