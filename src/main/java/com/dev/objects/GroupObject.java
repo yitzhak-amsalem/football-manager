@@ -1,6 +1,7 @@
 package com.dev.objects;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "teams")
@@ -11,9 +12,14 @@ public class GroupObject {
     public int id;
     @Column
     public String groupName;
-    @Column
-    private Boolean inLive;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GroupObject that = (GroupObject) o;
+        return id == that.id && groupName.equals(that.groupName);
+    }
 
     public String getGroupName() {
         return groupName;
@@ -21,13 +27,5 @@ public class GroupObject {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
-    }
-
-    public Boolean getInLive() {
-        return inLive;
-    }
-
-    public void setInLive(boolean inLive) {
-        this.inLive = inLive;
     }
 }

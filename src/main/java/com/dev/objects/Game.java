@@ -16,15 +16,16 @@ public class Game {
     @ManyToOne
     @JoinColumn
     private GroupObject groupB;
-
     @Column
     private int goalsGroupA;
-
     @Column
     private int goalsGroupB;
-
     @Column
     private Boolean isLive;
+
+    @ManyToOne
+    @JoinColumn
+    private UserObject userManager; // todo update connections func
 
     @Override
     public String toString() {

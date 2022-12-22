@@ -110,7 +110,16 @@ public class Persist {
     }
     public List<GroupObject> getAvailableGroups () {
         Session session = sessionFactory.openSession();
-        List<GroupObject> availableGroups = session.createQuery("FROM GroupObject WHERE inLive = " + false).list();
+        List<GroupObject> availableGroups = getAllGroups();
+        List<Game> gamesInLive = session.createQuery("FROM Game WHERE isLive = true").list();
+        List<GroupObject> groupsInLive = new ArrayList<>();
+        for (Game game: gamesInLive){
+            groupsInLive.add(game.getGroupA());
+            groupsInLive.add(game.getGroupB());
+        }
+        System.out.println("success: " + availableGroups.removeAll(groupsInLive));
+
+
         session.close();
         return availableGroups;
     }
@@ -127,15 +136,6 @@ public class Persist {
         session.close();
         System.out.println(liveGames.toString());
         return liveGames;
-    }
-    public void setGroupInLive(String groupName){
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-        GroupObject groupToUpdate = session.get(GroupObject.class, getGroupByGroupName(groupName).id);
-        groupToUpdate.setInLive(true);
-        session.update(groupToUpdate);
-        transaction.commit();
-        session.close();
     }
 
     public void getGroupDetails (TeamRankLive teamRank, boolean withLive) {
@@ -157,6 +157,38 @@ public class Persist {
         }
         session.close();
     }
+    public void saveGame(String group1Name,String group2Name){
+        Game game=new Game();
+        game.setGroupA(getGroupByGroupName(group1Name));
+        game.setGroupB(getGroupByGroupName(group2Name));
+        game.setLive(true);
+        game.setGoalsGroupA(0);
+        game.setGoalsGroupB(0);
+        sessionFactory.openSession().save(game);
+    }
+    public void finishGame(String group1Name,String group2Name){ // todo
+        Session session = sessionFactory.openSession();
+        Transaction transaction=session.beginTransaction();
+        session.createQuery("update Game set isLive=false where groupA= :groupA AND groupB= :groupB")
+                .setParameter("groupA",getGroupByGroupName(group1Name))
+                .setParameter("groupB",getGroupByGroupName(group2Name))
+                .executeUpdate();
+        transaction.commit();
+        session.close();
+    }
+    public void updateGoals(String groupAName,String groupBName,int goalsGroupA,int goalsGroupB){// todo
+        Session session = sessionFactory.openSession();
+        Transaction transaction=session.beginTransaction();
+        session.createQuery("update Game set goalsGroupA=:goalsGroupA , goalsGroupB=:goalsGroupB where groupA= :groupA AND groupB= :groupB")
+                .setParameter("groupA",getGroupByGroupName(groupAName))
+                .setParameter("groupB",getGroupByGroupName(groupBName))
+                .setParameter("goalsGroupA",goalsGroupA)
+                .setParameter("goalsGroupB",goalsGroupB)
+                .executeUpdate();
+        transaction.commit();
+        session.close();
+    }
+
 
     public void saveUser(UserObject userObject){
         sessionFactory.openSession().save(userObject);
