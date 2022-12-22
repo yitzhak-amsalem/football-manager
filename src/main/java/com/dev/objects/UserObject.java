@@ -11,17 +11,26 @@ public class UserObject {
     public int id;
 
     @Column
-    private String username;
+    private String userName;
 
     @Column
     private String token;
 
-    public String getUsername() {
-        return username;
+    @Override
+    public String toString() {
+        return "UserObject{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", token='" + token + '\'' +
+                '}';
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getToken() {
@@ -30,17 +39,6 @@ public class UserObject {
 
     public void setToken(String token) {
         this.token = token;
-    }
-
-    public void addPost (String post) {
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
 }

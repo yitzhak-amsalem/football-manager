@@ -8,8 +8,8 @@ import java.security.NoSuchAlgorithmException;
 
 @Component
 public class Utils {
-    public String createHash (String username, String password) {
-        String raw = String.format("%s_%s", username, password);
+    public String createHash (String userName, String password) {
+        String raw = String.format("%s_%s", userName, password);
         String myHash = null;
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");

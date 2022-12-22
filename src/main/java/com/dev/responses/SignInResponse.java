@@ -1,18 +1,20 @@
 package com.dev.responses;
 
-//public class SignInResponse extends BasicResponse{
-//    private User user;
+import com.dev.objects.UserObject;
 
-//    public SignInResponse(boolean success, Integer errorCode, User user) {
-//        super(success, errorCode);
-//        this.user = user;
-//    }
-//
-//    public User getUser() {
-//        return user;
-//    }
-//
-//    public void setUser(User user) {
-//        this.user = user;
-//    }
-//}
+public class SignInResponse extends BasicResponse{
+    private UserObject user;
+
+    public SignInResponse(boolean success, Integer errorCode, UserObject user) {
+        super(success, errorCode);
+        this.user = user;
+    }
+
+    public UserObject getUser() {
+        return user;
+    }
+
+    public void setUser(UserObject user) {
+        this.user = user;
+    }
+}

@@ -3,7 +3,9 @@ package com.dev.controllers;
 import com.dev.objects.Game;
 import com.dev.objects.GroupObject;
 import com.dev.objects.TeamRankLive;
+import com.dev.objects.UserObject;
 import com.dev.responses.BasicResponse;
+import com.dev.responses.SignInResponse;
 import com.dev.utils.Persist;
 import com.dev.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,8 +50,8 @@ public class TestController {
     }
 
     @RequestMapping(value = "/save-game", method = {RequestMethod.GET, RequestMethod.POST})
-    public void saveGame (String group1Name,String group2Name) {
-        persist.saveGame(group1Name,group2Name);
+    public void saveGame (String group1Name, String group2Name, String token) {
+        persist.saveGame(group1Name, group2Name, token);
     }
     @RequestMapping(value = "/update-goals", method = {RequestMethod.GET, RequestMethod.POST})
     public void updateGoals (String groupAName,String groupBName,int goalsGroupA,int goalsGroupB)  {
@@ -57,7 +59,7 @@ public class TestController {
     }
     @RequestMapping(value = "/finish-game", method = {RequestMethod.GET, RequestMethod.POST})
     public void finishGame (String group1Name,String group2Name) {
-        persist.finishGame(group1Name,group2Name);
+        persist.finishGame(group1Name, group2Name);
     }
     @RequestMapping(value = "/get-available-groups", method = {RequestMethod.GET, RequestMethod.POST})
     public List<String> getAvailableGroups () {
@@ -68,32 +70,30 @@ public class TestController {
         }
         return availableGroupsNames; // todo all group details or group name only
     }
-
     @RequestMapping(value = "/get-live-games", method = {RequestMethod.GET, RequestMethod.POST})
     public List<Game> getLiveGames () {
         return persist.getLiveGames();
     }
-
-    @RequestMapping(value = "/log-in", method = {RequestMethod.GET, RequestMethod.POST})
-    public BasicResponse logIn (String username, String password) {
-        System.out.println("username:"+username );
-
+    @RequestMapping(value = "/get-live-games-per-user", method = {RequestMethod.GET, RequestMethod.POST})
+    public List<Game> getLiveGamesPerUser (String token) {
+        System.out.println("token: " + token);
+        return persist.getLiveGamesPerUser(token);
+    }
+    @RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.POST})
+    public BasicResponse login (String userName, String password) {
         BasicResponse basicResponse = null;
-        String token = utils.createHash(username, password);
-        System.out.println("token:"+token );
-        token = persist.getUserByCreds(username, token); // todo rename
+        String token = utils.createHash(userName, password);
+        token = persist.getUserByCreds(userName, token);
         if (token == null) {
-            if (persist.userNameExist(username)) {
-                basicResponse = new BasicResponse(false, 1);
+            if (persist.userNameExist(userName)) {
+                basicResponse = new BasicResponse(false, 1); //todo constants
             } else {
-                basicResponse = new BasicResponse(false, 2);
+                basicResponse = new BasicResponse(false, 2); //todo constants
             }
         } else {
-            basicResponse = new BasicResponse(true, null);
+            UserObject user = persist.getUserByToken(token);
+            basicResponse = new SignInResponse(true, null, user);
         }
         return basicResponse;
     }
-
-
-
 }

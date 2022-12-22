@@ -70,6 +70,14 @@ public class Game {
         this.goalsGroupB = goalsGroupB;
     }
 
+    public UserObject getUserManager() {
+        return userManager;
+    }
+
+    public void setUserManager(UserObject userManager) {
+        this.userManager = userManager;
+    }
+
     public Boolean isLive() {
         return isLive;
     }
