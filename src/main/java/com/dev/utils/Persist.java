@@ -7,6 +7,7 @@ import com.dev.objects.UserObject;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -54,6 +55,7 @@ public class Persist {
             for (String groupName: groupsNames){
                 GroupObject group = new GroupObject();
                 group.setGroupName(groupName);
+                group.setInLive(false);
                 session.save(group);
             }
         }
@@ -122,13 +124,50 @@ public class Persist {
         session.close();
         return groups;
     }
-    public void setGroupInLive(String groupName){
+    public void setGroupInLive(String groupName,boolean isLive){
+        System.out.println("before groupName :" + groupName);
         Session session = sessionFactory.openSession();
-        GroupObject groupToUpdate = session.get(GroupObject.class, groupName);
-        System.out.println("before update" + groupToUpdate);
-        groupToUpdate.setInLive(true);
-        GroupObject groupToUpdate1 = session.get(GroupObject.class, groupName);
-        System.out.println("after update" + groupToUpdate1);
+        Transaction transaction=session.beginTransaction();
+        session.createQuery("update GroupObject set inLive=:isLive where groupName= :groupName")
+                .setParameter("groupName",groupName)
+                .setParameter("isLive",isLive)
+                        .executeUpdate();
+        transaction.commit();
+        session.close();
+    }
+    public void saveGame(String group1Name,String group2Name){
+        Game game=new Game();
+        game.setGroupA(getGroupByGroupName(group1Name));
+        game.setGroupB(getGroupByGroupName(group2Name));
+        game.setLive(true);
+        game.setGoalsGroupA(0);
+        game.setGoalsGroupB(0);
+        setGroupInLive(group1Name,true);
+        setGroupInLive(group2Name,true);
+        sessionFactory.openSession().save(game);
+    }
+    public void finishGame(String group1Name,String group2Name){
+        Session session = sessionFactory.openSession();
+        Transaction transaction=session.beginTransaction();
+        session.createQuery("update Game set isLive=false where groupA= :groupA AND groupB= :groupB")
+                .setParameter("groupA",getGroupByGroupName(group1Name))
+                .setParameter("groupB",getGroupByGroupName(group2Name))
+                .executeUpdate();
+        setGroupInLive(group1Name,false);
+        setGroupInLive(group2Name,false);
+        transaction.commit();
+        session.close();
+    }
+    public void updateGoals(String groupAName,String groupBName,int goalsGroupA,int goalsGroupB){
+        Session session = sessionFactory.openSession();
+        Transaction transaction=session.beginTransaction();
+        session.createQuery("update Game set goalsGroupA=:goalsGroupA , goalsGroupB=:goalsGroupB where groupA= :groupA AND groupB= :groupB")
+                .setParameter("groupA",getGroupByGroupName(groupAName))
+                .setParameter("groupB",getGroupByGroupName(groupBName))
+                .setParameter("goalsGroupA",goalsGroupA)
+                .setParameter("goalsGroupB",goalsGroupB)
+                .executeUpdate();
+        transaction.commit();
         session.close();
     }
 

@@ -51,7 +51,19 @@ public class TestController {
 
     @RequestMapping(value = "/set-group-in-live", method = {RequestMethod.GET, RequestMethod.POST})
     public void setGroupInLive (String groupName) {
-        persist.setGroupInLive(groupName);
+        persist.setGroupInLive(groupName,true);
+    }
+    @RequestMapping(value = "/save-game", method = {RequestMethod.GET, RequestMethod.POST})
+    public void saveGame (String group1Name,String group2Name) {
+        persist.saveGame(group1Name,group2Name);
+    }
+    @RequestMapping(value = "/update-goals", method = {RequestMethod.GET, RequestMethod.POST})
+    public void updateGoals (String groupAName,String groupBName,int goalsGroupA,int goalsGroupB)  {
+        persist.updateGoals(groupAName,groupBName,goalsGroupA,goalsGroupB);
+    }
+    @RequestMapping(value = "/finish-game", method = {RequestMethod.GET, RequestMethod.POST})
+    public void finishGame (String group1Name,String group2Name) {
+        persist.finishGame(group1Name,group2Name);
     }
     @RequestMapping(value = "/get-available-groups", method = {RequestMethod.GET, RequestMethod.POST})
     public List<String> getAvailableGroups () {
