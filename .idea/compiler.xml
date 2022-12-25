@@ -7,14 +7,14 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="com.dev" />
-        <module name="rest-server-hibernate" />
+        <module name="live-363-backend" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="com.dev" options="-parameters" />
-      <module name="rest-server-hibernate" options="-parameters" />
+      <module name="live-363-backend" options="-parameters" />
     </option>
   </component>
 </project>

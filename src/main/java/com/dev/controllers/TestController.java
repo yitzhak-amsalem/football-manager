@@ -34,7 +34,7 @@ public class TestController {
 
     }
     @RequestMapping(value = "/get-league-table", method = {RequestMethod.GET, RequestMethod.POST})
-    public List<TeamRankLive> getTable (boolean withLive) {
+    public List<TeamRankLive> getLeagueTable(boolean withLive) {
         System.out.println(withLive);
         teams = new ArrayList<>();
         allGroups = persist.getAllGroups();
@@ -76,7 +76,6 @@ public class TestController {
     }
     @RequestMapping(value = "/get-live-games-per-user", method = {RequestMethod.GET, RequestMethod.POST})
     public List<Game> getLiveGamesPerUser (String token) {
-        System.out.println("token: " + token);
         return persist.getLiveGamesPerUser(token);
     }
     @RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.POST})
