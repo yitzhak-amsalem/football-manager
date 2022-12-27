@@ -25,7 +25,7 @@ public class Game {
 
     @ManyToOne
     @JoinColumn
-    private UserObject userManager; // todo update connections func
+    private UserObject userManager;
 
     @Override
     public String toString() {

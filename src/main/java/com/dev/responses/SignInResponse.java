@@ -3,18 +3,18 @@ package com.dev.responses;
 import com.dev.objects.UserObject;
 
 public class SignInResponse extends BasicResponse{
-    private UserObject user;
+    private String userToken;
 
-    public SignInResponse(boolean success, Integer errorCode, UserObject user) {
+    public SignInResponse(boolean success, Integer errorCode, String userToken) {
         super(success, errorCode);
-        this.user = user;
+        this.userToken = userToken;
     }
 
-    public UserObject getUser() {
-        return user;
+    public String getUserToken() {
+        return userToken;
     }
 
-    public void setUser(UserObject user) {
-        this.user = user;
+    public void setUserToken(String userToken) {
+        this.userToken = userToken;
     }
 }

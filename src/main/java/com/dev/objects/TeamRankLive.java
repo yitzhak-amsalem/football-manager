@@ -19,12 +19,12 @@ public class TeamRankLive implements Comparable<TeamRankLive>{
     }
     public void updateGroupDetails(Game game){
         if (game.getGroupA().getGroupName().equals(this.groupName)){
-            this.update(game.getGoalsGroupA(), game.getGoalsGroupB());
+            this.updateGame(game.getGoalsGroupA(), game.getGoalsGroupB());
         } else if (game.getGroupB().getGroupName().equals(this.groupName)) {
-            this.update(game.getGoalsGroupB(), game.getGoalsGroupA());
+            this.updateGame(game.getGoalsGroupB(), game.getGoalsGroupA());
         }
     }
-    private void update(int goalsGroupA, int goalsGroupB){
+    private void updateGame(int goalsGroupA, int goalsGroupB){
         if (goalsGroupA > goalsGroupB) {
             this.setWins(this.getWins() + 1);
         } else {
