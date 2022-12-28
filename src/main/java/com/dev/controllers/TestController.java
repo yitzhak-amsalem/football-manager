@@ -61,7 +61,7 @@ public class TestController {
     }
 
     @RequestMapping(value = "/end-game", method = {RequestMethod.GET, RequestMethod.POST})
-    public void finishGame(String groupAName, String groupBName) {
+    public void endGame(String groupAName, String groupBName) {
         persist.finishGame(groupAName, groupBName);
     }
 
