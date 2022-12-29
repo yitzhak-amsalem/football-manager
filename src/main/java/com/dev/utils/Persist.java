@@ -35,7 +35,6 @@ public class Persist {
 
     public void setFirstUser() {
         addUser("manager", "12345678");
-        addUser("manager1", "123456781");
     }
 
     public void setGroups() {
