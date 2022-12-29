@@ -103,20 +103,23 @@ public class Persist {
         return liveGamesPerUser;
     }
 
-    public void getGroupDetails(TeamRankLive teamRank, boolean withLive) {
+    public void getGroupDetails(TeamRankLive teamRank) {
         Session session = sessionFactory.openSession();
-        List<Game> games = new ArrayList<>();
-        if (withLive) {
-            games = session.createQuery("FROM Game WHERE groupA.groupName = :groupNameA or groupB.groupName = :groupNameB")
+        List<Game> games = session.createQuery("FROM Game WHERE (groupA.groupName = :groupNameA or groupB.groupName = :groupNameB) and isLive = false")
                     .setParameter("groupNameA", teamRank.getGroupName())
                     .setParameter("groupNameB", teamRank.getGroupName())
                     .list();
-        } else {
-            games = session.createQuery("FROM Game WHERE (groupA.groupName = :groupNameA or groupB.groupName = :groupNameB) and isLive = false")
-                    .setParameter("groupNameA", teamRank.getGroupName())
-                    .setParameter("groupNameB", teamRank.getGroupName())
-                    .list();
+        for (Game game : games) {
+            teamRank.updateGroupDetails(game);
         }
+        session.close();
+    }
+    public void getGroupLiveDetails(TeamRankLive teamRank) {
+        Session session = sessionFactory.openSession();
+        List<Game> games = session.createQuery("FROM Game WHERE groupA.groupName = :groupNameA or groupB.groupName = :groupNameB")
+                    .setParameter("groupNameA", teamRank.getGroupName())
+                    .setParameter("groupNameB", teamRank.getGroupName())
+                    .list();
         for (Game game : games) {
             teamRank.updateGroupDetails(game);
         }

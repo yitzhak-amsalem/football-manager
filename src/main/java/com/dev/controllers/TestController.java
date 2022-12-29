@@ -28,6 +28,7 @@ public class TestController {
     @Autowired
     private Persist persist;
     private List<TeamRankLive> teams;
+    private List<TeamRankLive> liveTeams;
     private List<GroupObject> allGroups = new ArrayList<>();
 
     @PostConstruct
@@ -37,17 +38,30 @@ public class TestController {
     }
 
     @RequestMapping(value = "/get-league-table", method = {RequestMethod.GET, RequestMethod.POST})
-    public List<TeamRankLive> getLeagueTable(boolean withLive) {
+    public List<TeamRankLive> getLeagueTable() {
         teams = new ArrayList<>();
         for (GroupObject group : allGroups) {
             TeamRankLive teamRank = new TeamRankLive(group.getGroupName(), 0, 0, 0, 0, 0);
             teams.add(teamRank);
         }
         for (TeamRankLive team : teams) {
-            persist.getGroupDetails(team, withLive);
+            persist.getGroupDetails(team);
         }
         Collections.sort(teams);
         return teams;
+    }
+    @RequestMapping(value = "/get-league-table-live", method = {RequestMethod.GET, RequestMethod.POST})
+    public List<TeamRankLive> getLeagueTableLive() {
+        liveTeams = new ArrayList<>();
+        for (GroupObject group : allGroups) {
+            TeamRankLive teamRank = new TeamRankLive(group.getGroupName(), 0, 0, 0, 0, 0);
+            liveTeams.add(teamRank);
+        }
+        for (TeamRankLive team : liveTeams) {
+            persist.getGroupLiveDetails(team);
+        }
+        Collections.sort(liveTeams);
+        return liveTeams;
     }
 
     @RequestMapping(value = "/save-game", method = {RequestMethod.GET, RequestMethod.POST})
